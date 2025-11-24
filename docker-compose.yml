@@ -1,0 +1,29 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: db
+    environment:
+      SA_PASSWORD: "TuPassword123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - backend
+
+  microservicio-materia:
+    build:
+      context: .
+    container_name: microservicio-materia
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=MateriaDB;User=sa;Password=TuPassword123;Encrypt=false;TrustServerCertificate=true;
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
